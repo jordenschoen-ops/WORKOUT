@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>Jorden's Cut Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #141414;
+    --bg-3: #1c1c1c;
+    --line: #2a2a2a;
+    --text: #f5f5f5;
+    --text-dim: #999;
+    --text-faint: #666;
+    --accent: #ff2222;
+    --accent-2: #ff4444;
+    --green: #22c55e;
+    --yellow: #eab308;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  body {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-bottom: 100px;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 32px 20px 24px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #1a0a0a 0%, var(--bg) 100%);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10, 10, 10, 0.85);
+  }
+
+  .header-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .header-stats span strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 12px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 130px;
+    z-index: 9;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* PANEL */
+  .panel {
+    display: none;
+    padding: 24px 20px 40px;
+  }
+
+  .panel.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+
+  .section-subtitle {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* OVERVIEW SCHEDULE TABLE */
+  .schedule {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 90px;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+
+  .schedule-row:last-child {
+    border-bottom: none;
+  }
+
+  .schedule-row.rest {
+    background: var(--bg-2);
+    opacity: 0.6;
+  }
+
+  .schedule-row.hiit {
+    background: linear-gradient(90deg, rgba(255, 34, 34, 0.08) 0%, transparent 100%);
+    border-left: 3px solid var(--accent);
+  }
+
+  .schedule-day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .schedule-focus {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .schedule-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-align: right;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .schedule-tag.hiit { color: var(--accent); }
+  .schedule-tag.lift { color: var(--yellow); }
+  .schedule-tag.cardio { color: var(--green); }
+
+  /* BLOCK CARD */
+  .block {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+
+  .block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--bg-3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .block-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .block-num {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .block-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+
+  .block-body {
+    padding: 14px 16px;
+  }
+
+  /* EXERCISE LIST */
+  .ex-section {
+    margin-bottom: 16px;
+  }
+
+  .ex-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .ex-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .ex-section-title strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .ex-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    align-items: baseline;
+  }
+
+  .ex-name {
+    color: var(--text);
+  }
+
+  .ex-reps {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .rotate-note {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-style: italic;
+    margin-top: 6px;
+  }
+
+  /* TREADMILL ROWS */
+  .tread-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .tread-row:last-child {
+    border-bottom: none;
+  }
+
+  .tread-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+
+  .tread-action {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .tread-speed {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .speed-walk { color: var(--text-dim); }
+  .speed-jog { color: var(--green); }
+  .speed-run { color: var(--yellow); }
+  .speed-sprint { color: var(--accent); }
+
+  /* LIFT - SETS */
+  .lift-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: center;
+  }
+
+  .lift-row:last-child { border-bottom: none; }
+
+  .lift-name {
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .lift-sets {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 700;
+    background: rgba(255, 34, 34, 0.1);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  /* DIET */
+  .meal {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+
+  .meal-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .meal-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .meal ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .meal li {
+    padding: 5px 0;
+    font-size: 14px;
+    color: var(--text);
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .meal li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 13px;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* MACROS */
+  .macros {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .macro {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+
+  .macro-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .macro-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* RULES */
+  .rule {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .rule-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .rule-text {
+    font-size: 14px;
+    line-height: 1.5;
+    padding-top: 4px;
+  }
+
+  .rule-text strong {
+    color: var(--accent-2);
+  }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(255, 34, 34, 0.06);
+    padding: 14px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .callout-yellow {
+    border-left-color: var(--yellow);
+    background: rgba(234, 179, 8, 0.06);
+  }
+
+  .callout-green {
+    border-left-color: var(--green);
+    background: rgba(34, 197, 94, 0.06);
+  }
+
+  .callout strong {
+    color: var(--accent-2);
+  }
+
+  /* TIMELINE */
+  .timeline {
+    margin: 20px 0;
+  }
+
+  .tl-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tl-row:last-child {
+    border-bottom: none;
+  }
+
+  .tl-week {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+
+  .tl-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--line);
+    margin: 32px 0;
+  }
+
+  .divider-label {
+    text-align: center;
+    margin: 32px 0 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* FOOTER NAV */
+  .footer-note {
+    text-align: center;
+    padding: 30px 20px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-eyebrow">Operation: 185</div>
+  <div class="header-title">CUT PLAN</div>
+  <div class="header-stats">
+    <span>Start: <strong>204</strong></span>
+    <span>Goal: <strong>185</strong></span>
+    <span>Window: <strong>6-8 wk</strong></span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview')">Overview</button>
+  <button class="tab" onclick="showTab('mon')">Mon</button>
+  <button class="tab" onclick="showTab('tue')">Tue</button>
+  <button class="tab" onclick="showTab('wed')">Wed</button>
+  <button class="tab" onclick="showTab('thu')">Thu</button>
+  <button class="tab" onclick="showTab('fri')">Fri</button>
+  <button class="tab" onclick="showTab('sat')">Sat</button>
+  <button class="tab" onclick="showTab('diet')">Diet</button>
+  <button class="tab" onclick="showTab('rules')">Rules</button>
+</div>
+
+<!-- OVERVIEW -->
+<div class="panel active" id="overview">
+  <div class="section-label">The Split</div>
+  <div class="section-title">Weekly Schedule</div>
+  <div class="section-subtitle">5 training days. Fasted AM. Eat at 12pm.</div>
+
+  <div class="schedule">
+    <div class="schedule-row hiit">
+      <div class="schedule-day">MON</div>
+      <div class="schedule-focus">Arms &amp; Abs HIIT</div>
+      <div class="schedule-tag hiit">Barry's-Style</div>
+    </div>
+    <div class="schedule-row">
+      <div class="schedule-day">TUE</div>
+      <div class="schedule-focus">Lower (Quads)</div>
+      <div class="schedule-tag lift">Lift</div>
+    </div>
+    <div class="schedule-row hiit">
+      <div class="schedule-day">WED</div>
+      <div class="schedule-focus">Chest, Back &amp; Abs HIIT</div>
+      <div class="schedule-tag hiit">Studio Day</div>
+    </div>
+    <div class="schedule-row">
+      <div class="schedule-day">THU</div>
+      <div class="schedule-focus">Lower (Posterior)</div>
+      <div class="schedule-tag lift">Lift</div>
+    </div>
+    <div class="schedule-row hiit">
+      <div class="schedule-day">FRI</div>
+      <div class="schedule-focus">Total Body HIIT</div>
+      <div class="schedule-tag hiit">Barry's-Style</div>
+    </div>
+    <div class="schedule-row">
+      <div class="schedule-day">SAT</div>
+      <div class="schedule-focus">Long Walk + Dog</div>
+      <div class="schedule-tag cardio">Zone 2</div>
+    </div>
+    <div class="schedule-row rest">
+      <div class="schedule-day">SUN</div>
+      <div class="schedule-focus">Off / Recovery</div>
+      <div class="schedule-tag">Rest</div>
+    </div>
+  </div>
+
+  <div class="section-label">Daily Macros</div>
+  <div class="section-title">Hit These Numbers</div>
+  <div class="section-subtitle">Keto. ~600 cal deficit at 204 lbs.</div>
+
+  <div class="macros">
+    <div class="macro">
+      <div class="macro-value">2,200</div>
+      <div class="macro-label">Cal</div>
+    </div>
+    <div class="macro">
+      <div class="macro-value">180g</div>
+      <div class="macro-label">Protein</div>
+    </div>
+    <div class="macro">
+      <div class="macro-value">150g</div>
+      <div class="macro-label">Fat</div>
+    </div>
+    <div class="macro">
+      <div class="macro-value">&lt;25g</div>
+      <div class="macro-label">Net Carbs</div>
+    </div>
+  </div>
+
+  <div class="section-label">What to Expect</div>
+  <div class="section-title">The Timeline</div>
+
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="tl-week">WK 1</div>
+      <div class="tl-text">Drop 5-8 lbs. Mostly water + inflammation. The bloat goes first.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">WK 2</div>
+      <div class="tl-text">Keto flu hits days 3-5. Push electrolytes. Energy returns by day 7.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">WK 3-4</div>
+      <div class="tl-text">Real fat loss locks in. Steady 1.5-2 lbs/week. Lifts feel strong fasted.</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-week">WK 6-8</div>
+      <div class="tl-text">185 territory. Visible leaner. Stay disciplined the last 5 lbs.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MONDAY -->
+<div class="panel" id="mon">
+  <div class="section-label">Monday — HIIT</div>
+  <div class="section-title">Arms &amp; Abs</div>
+  <div class="section-subtitle">50 min · Floor start · 3 floor / 2 tread</div>
+
+  <div class="callout">
+    <strong>Format:</strong> Each 5-min section = 3 exercises rotated. 1 bicep, 1 ab, 1 tricep. No rest within section. 30 sec rest between sections.
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">15 MIN</div>
+    </div>
+    <div class="block-body">
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Bicep Curl</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Sit-Ups</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Tricep Kickback (each side)</div><div class="ex-reps">×15</div></div>
+        <div class="rotate-note">Rotate through all 3 for full 5 min.</div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Hammer Curl</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Bicycle Crunches</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Overhead Tricep Ext.</div><div class="ex-reps">×15</div></div>
+        <div class="rotate-note">Rotate for 5 min.</div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section C · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Curl + 30s hold @ 90°</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Russian Twist (DB)</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Close-Grip Push-Up</div><div class="ex-reps">×12</div></div>
+        <div class="rotate-note">The hold is the Barry's signature. Burn through it.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">2</div>
+        <div class="block-title">Treadmill</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">5.0</div></div>
+      <div class="tread-row"><div class="tread-time">2:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.0</div></div>
+      <div class="tread-row"><div class="tread-time">3:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">4:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">5:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+      <div class="tread-row"><div class="tread-time">6:30</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">7:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">8:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.5</div></div>
+      <div class="tread-row"><div class="tread-time">9:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">3</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">5 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">New exercises · <strong>same muscles</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Curl-to-Press</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">Plank Shoulder Taps</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Tricep Dips off Bench</div><div class="ex-reps">×15</div></div>
+        <div class="rotate-note">Rotate for 5 min.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">4</div>
+        <div class="block-title">Treadmill — 6 Rounds</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-yellow">
+        Each round = <strong>1:40</strong>. Repeat 6 times.
+      </div>
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">0:30</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:40</div><div class="tread-action">Repeat ×5</div><div class="tread-speed">—</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">5</div>
+        <div class="block-title">Floor Finisher — All Abs</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Leg Raises</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Hollow Hold</div><div class="ex-reps">30 sec</div></div>
+        <div class="ex-item"><div class="ex-name">Bicycle Crunches</div><div class="ex-reps">×25</div></div>
+      </div>
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Sit-Up to OH DB Press</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">Plank</div><div class="ex-reps">45 sec</div></div>
+        <div class="ex-item"><div class="ex-name">Russian Twist</div><div class="ex-reps">×25</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TUESDAY -->
+<div class="panel" id="tue">
+  <div class="section-label">Tuesday — Lift</div>
+  <div class="section-title">Lower · Quad-Focused</div>
+  <div class="section-subtitle">Apt gym · 3 sets each · 60-90 sec rest</div>
+
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Main Lift</div>
+      </div>
+      <div class="block-time">~40 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="lift-row"><div class="lift-name">Goblet Squat</div><div class="lift-sets">3 × 10</div></div>
+      <div class="lift-row"><div class="lift-name">DB Bulgarian Split Squat</div><div class="lift-sets">3 × 10/leg</div></div>
+      <div class="lift-row"><div class="lift-name">DB Walking Lunge</div><div class="lift-sets">3 × 12/leg</div></div>
+      <div class="lift-row"><div class="lift-name">Leg Extension / Sissy Squat</div><div class="lift-sets">3 × 15</div></div>
+      <div class="lift-row"><div class="lift-name">Standing Calf Raise</div><div class="lift-sets">3 × 15</div></div>
+      <div class="lift-row"><div class="lift-name">Hanging Knee Raise</div><div class="lift-sets">3 × 12</div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">2</div>
+        <div class="block-title">Cardio Finisher</div>
+      </div>
+      <div class="block-time">15 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-green">
+        <strong>Incline Walk:</strong> 3.5 mph · 8% incline · 15 min straight. Done.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WEDNESDAY -->
+<div class="panel" id="wed">
+  <div class="section-label">Wednesday — HIIT</div>
+  <div class="section-title">Chest, Back &amp; Abs</div>
+  <div class="section-subtitle">50 min · Floor start · Studio day if possible</div>
+
+  <div class="callout">
+    <strong>Pattern:</strong> Each 5-min section = 1 chest, 1 back, 1 ab. Rotate.
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">15 MIN</div>
+    </div>
+    <div class="block-body">
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Bench Press</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Single-Arm Row (each)</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Sit-Ups</div><div class="ex-reps">×20</div></div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Chest Fly</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Bent-Over Reverse Fly</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Leg Raises</div><div class="ex-reps">×15</div></div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section C · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Push-Up</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">DB Pullover</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Bicycle Crunches</div><div class="ex-reps">×20</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">2</div>
+        <div class="block-title">Treadmill</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">5.0</div></div>
+      <div class="tread-row"><div class="tread-time">2:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.0</div></div>
+      <div class="tread-row"><div class="tread-time">3:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">4:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">5:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+      <div class="tread-row"><div class="tread-time">6:30</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">7:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">8:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.5</div></div>
+      <div class="tread-row"><div class="tread-time">9:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">3</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">5 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">New exercises · <strong>same muscles</strong></div>
+        <div class="ex-item"><div class="ex-name">Incline DB Press</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Renegade Row (each)</div><div class="ex-reps">×10</div></div>
+        <div class="ex-item"><div class="ex-name">Russian Twist</div><div class="ex-reps">×25</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">4</div>
+        <div class="block-title">Treadmill — 6 Rounds</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-yellow">Each round ~1:45 · Incline focus.</div>
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Sprint @ 2% incline</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">0:30</div><div class="tread-action">Run @ 4% incline</div><div class="tread-speed speed-run">7.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:15</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:45</div><div class="tread-action">Repeat ×5</div><div class="tread-speed">—</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">5</div>
+        <div class="block-title">Floor Finisher — All Abs</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Leg Raises</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Plank</div><div class="ex-reps">45 sec</div></div>
+        <div class="ex-item"><div class="ex-name">Bicycle Crunches</div><div class="ex-reps">×25</div></div>
+      </div>
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Hollow Hold</div><div class="ex-reps">30 sec</div></div>
+        <div class="ex-item"><div class="ex-name">DB Sit-Up to Press</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">Mountain Climbers</div><div class="ex-reps">×30</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THURSDAY -->
+<div class="panel" id="thu">
+  <div class="section-label">Thursday — Lift</div>
+  <div class="section-title">Lower · Posterior Chain</div>
+  <div class="section-subtitle">Apt gym · 3 sets each · 60-90 sec rest</div>
+
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Main Lift</div>
+      </div>
+      <div class="block-time">~40 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="lift-row"><div class="lift-name">DB Romanian Deadlift</div><div class="lift-sets">3 × 10</div></div>
+      <div class="lift-row"><div class="lift-name">Hip Thrust (DB on lap)</div><div class="lift-sets">3 × 12</div></div>
+      <div class="lift-row"><div class="lift-name">Reverse Lunge</div><div class="lift-sets">3 × 10/leg</div></div>
+      <div class="lift-row"><div class="lift-name">Hamstring Curl / Swiss Ball</div><div class="lift-sets">3 × 12</div></div>
+      <div class="lift-row"><div class="lift-name">Seated Calf Raise</div><div class="lift-sets">3 × 15</div></div>
+      <div class="lift-row"><div class="lift-name">Cable / Hanging Oblique</div><div class="lift-sets">3 × 12/side</div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">2</div>
+        <div class="block-title">Cardio Finisher</div>
+      </div>
+      <div class="block-time">15 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-green">
+        <strong>Incline Walk:</strong> 3.5 mph · 8% incline · 15 min.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FRIDAY -->
+<div class="panel" id="fri">
+  <div class="section-label">Friday — HIIT</div>
+  <div class="section-title">Total Body</div>
+  <div class="section-subtitle">50 min · Floor start · Full body finisher</div>
+
+  <div class="callout">
+    <strong>Pattern:</strong> Each 5-min section = 1 lower, 1 upper push, 1 upper pull / compound.
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">15 MIN</div>
+    </div>
+    <div class="block-body">
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">Goblet Squat</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">DB Bench Press</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Single-Arm Row (each)</div><div class="ex-reps">×15</div></div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Reverse Lunge (each)</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">DB Shoulder Press <em>(light)</em></div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">Bent-Over Row</div><div class="ex-reps">×15</div></div>
+      </div>
+
+      <div class="ex-section">
+        <div class="ex-section-title">Section C · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB RDL</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Push-Up</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">DB Curl-to-Press</div><div class="ex-reps">×12</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">2</div>
+        <div class="block-title">Treadmill</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">5.0</div></div>
+      <div class="tread-row"><div class="tread-time">2:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.0</div></div>
+      <div class="tread-row"><div class="tread-time">3:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">4:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">5:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+      <div class="tread-row"><div class="tread-time">6:30</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">10.0</div></div>
+      <div class="tread-row"><div class="tread-time">7:00</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">8:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.5</div></div>
+      <div class="tread-row"><div class="tread-time">9:00</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">3</div>
+        <div class="block-title">Floor</div>
+      </div>
+      <div class="block-time">5 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">New exercises · <strong>same pattern</strong></div>
+        <div class="ex-item"><div class="ex-name">Jump Squat</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">DB Chest Fly</div><div class="ex-reps">×15</div></div>
+        <div class="ex-item"><div class="ex-name">Reverse Fly</div><div class="ex-reps">×15</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">4</div>
+        <div class="block-title">Treadmill — 6 Rounds</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-yellow">Each round ~1:40. Repeat 6 times.</div>
+      <div class="tread-row"><div class="tread-time">0:00</div><div class="tread-action">Sprint</div><div class="tread-speed speed-sprint">9.5</div></div>
+      <div class="tread-row"><div class="tread-time">0:45</div><div class="tread-action">Jog</div><div class="tread-speed speed-jog">6.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:15</div><div class="tread-action">Walk</div><div class="tread-speed speed-walk">3.0</div></div>
+      <div class="tread-row"><div class="tread-time">1:40</div><div class="tread-action">Repeat ×5</div><div class="tread-speed">—</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">5</div>
+        <div class="block-title">Floor Finisher — Total Body</div>
+      </div>
+      <div class="block-time">10 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="ex-section">
+        <div class="ex-section-title">Section A · <strong>5 min</strong></div>
+        <div class="ex-item"><div class="ex-name">DB Thruster</div><div class="ex-reps">×12</div></div>
+        <div class="ex-item"><div class="ex-name">Renegade Row</div><div class="ex-reps">×10</div></div>
+        <div class="ex-item"><div class="ex-name">Jump Squat</div><div class="ex-reps">×15</div></div>
+      </div>
+      <div class="ex-section">
+        <div class="ex-section-title">Section B · <strong>5 min · close on abs</strong></div>
+        <div class="ex-item"><div class="ex-name">Plank</div><div class="ex-reps">45 sec</div></div>
+        <div class="ex-item"><div class="ex-name">Sit-Ups</div><div class="ex-reps">×20</div></div>
+        <div class="ex-item"><div class="ex-name">Russian Twist</div><div class="ex-reps">×25</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SATURDAY -->
+<div class="panel" id="sat">
+  <div class="section-label">Saturday — Active Recovery</div>
+  <div class="section-title">Long Walk + Dog</div>
+  <div class="section-subtitle">Easy pace · The Quarter loop</div>
+
+  <div class="block">
+    <div class="block-header">
+      <div class="block-header-left">
+        <div class="block-num">1</div>
+        <div class="block-title">Zone 2 Walk</div>
+      </div>
+      <div class="block-time">45-60 MIN</div>
+    </div>
+    <div class="block-body">
+      <div class="callout callout-green">
+        <strong>Pace:</strong> Conversational. Heart rate 110-130. You should be able to talk without gasping.
+      </div>
+      <div class="callout">
+        <strong>Why this matters:</strong> Burns fat without taxing recovery. Lets your CNS reset before Monday. The dog gets tired. Win-win.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-label">Sunday = OFF · Dog walks only</div>
+</div>
+
+<!-- DIET -->
+<div class="panel" id="diet">
+  <div class="section-label">Daily Eating</div>
+  <div class="section-title">Keto · 16:8 Fast</div>
+  <div class="section-subtitle">First meal 12pm. Last meal by 8pm.</div>
+
+  <div class="macros">
+    <div class="macro"><div class="macro-value">2,200</div><div class="macro-label">Cal</div></div>
+    <div class="macro"><div class="macro-value">180g</div><div class="macro-label">Protein</div></div>
+    <div class="macro"><div class="macro-value">150g</div><div class="macro-label">Fat</div></div>
+    <div class="macro"><div class="macro-value">&lt;25g</div><div class="macro-label">Net Carbs</div></div>
+  </div>
+
+  <div class="meal">
+    <div class="meal-time">5:30 AM · Pre-Workout</div>
+    <div class="meal-name">Fasted Stack</div>
+    <ul>
+      <li>Black coffee</li>
+      <li>LMNT or pinch of sea salt + lemon water</li>
+      <li>Optional: beef protein isolate (if tolerated)</li>
+    </ul>
+  </div>
+
+  <div class="meal">
+    <div class="meal-time">12:00 PM · Break the Fast</div>
+    <div class="meal-name">Meal 1</div>
+    <ul>
+      <li>8 oz ribeye, NY strip, or 80/20 ground beef</li>
+      <li>2 cups spinach or arugula sautéed in olive oil</li>
+      <li>½ avocado</li>
+      <li>Sea salt + black pepper</li>
+    </ul>
+  </div>
+
+  <div class="meal">
+    <div class="meal-time">4:00 PM · Mid-Day</div>
+    <div class="meal-name">Meal 2</div>
+    <ul>
+      <li>8 oz wild salmon (skin on)</li>
+      <li>2 cups asparagus, broccoli, or zucchini roasted in olive oil</li>
+      <li>½ avocado or 2 tbsp olive oil drizzle</li>
+      <li>Lemon</li>
+    </ul>
+  </div>
+
+  <div class="meal">
+    <div class="meal-time">7:00 PM · Optional</div>
+    <div class="meal-name">Meal 3 (if hungry)</div>
+    <ul>
+      <li>4-6 oz steak or salmon</li>
+      <li>Side salad with olive oil + sea salt</li>
+      <li>1 oz macadamia nuts (only safe nut for keto)</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Hydration</div>
+  <div class="section-title">Non-Negotiable</div>
+
+  <div class="callout">
+    <strong>1 gallon water/day.</strong> 2 LMNT packs (or salt + lemon) — one before workout, one at noon. Keto + TBI + sweat = electrolyte crashes if you skip this.
+  </div>
+
+  <div class="section-label">Crohn's Note</div>
+  <div class="callout callout-yellow">
+    Start with cooked spinach, zucchini, asparagus the first 2 weeks. Hold off on raw broccoli/cauliflower/cabbage until your gut adapts to keto. Salmon, ribeye, ground beef are all gut-safe.
+  </div>
+
+  <div class="section-label">Grocery Staples</div>
+  <div class="block">
+    <div class="block-body">
+      <div class="ex-item"><div class="ex-name">Ribeye / NY Strip / 80-20 ground beef</div><div class="ex-reps">5 lb</div></div>
+      <div class="ex-item"><div class="ex-name">Wild salmon fillets</div><div class="ex-reps">4 lb</div></div>
+      <div class="ex-item"><div class="ex-name">Spinach (bagged)</div><div class="ex-reps">3 bags</div></div>
+      <div class="ex-item"><div class="ex-name">Asparagus / zucchini / broccoli</div><div class="ex-reps">mix</div></div>
+      <div class="ex-item"><div class="ex-name">Avocados</div><div class="ex-reps">7</div></div>
+      <div class="ex-item"><div class="ex-name">Olive oil (cold-pressed)</div><div class="ex-reps">1 bottle</div></div>
+      <div class="ex-item"><div class="ex-name">Macadamia nuts</div><div class="ex-reps">1 bag</div></div>
+      <div class="ex-item"><div class="ex-name">LMNT packs</div><div class="ex-reps">box</div></div>
+      <div class="ex-item"><div class="ex-name">Sea salt + lemons</div><div class="ex-reps">stock</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RULES -->
+<div class="panel" id="rules">
+  <div class="section-label">The Rules</div>
+  <div class="section-title">Read Before Day 1</div>
+
+  <div class="rule">
+    <div class="rule-num">01</div>
+    <div class="rule-text"><strong>Electrolytes before EVERY fasted workout.</strong> LMNT or salt + lemon 30 min before. With TBI, skipping this = dizzy spells. Non-negotiable.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">02</div>
+    <div class="rule-text"><strong>Lift first, cardio second.</strong> Don't flip the order — cardio before lifts tanks strength output.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">03</div>
+    <div class="rule-text"><strong>Last 2 reps should feel hard.</strong> Not impossible. If reps 1-10 feel easy, the weight is too light.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">04</div>
+    <div class="rule-text"><strong>HIIT speeds adjust.</strong> Week 1 if brutal, drop 0.5 mph. If easy, add 0.5 mph. The chart is a starting point, not the law.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">05</div>
+    <div class="rule-text"><strong>Track 3 things daily:</strong> AM weight (same time, post-bathroom), workout completed Y/N, energy 1-10. Adjust calories down 200 if scale stalls past day 10.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">06</div>
+    <div class="rule-text"><strong>Lightheaded = stop.</strong> Pinch of salt under tongue, sip water, sit. TBI + low blood sugar + intervals is a real risk. Don't push through.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">07</div>
+    <div class="rule-text"><strong>Don't weigh daily and freak.</strong> Keto water shifts are wild for the first 2 weeks. Track the trend, not the number.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">08</div>
+    <div class="rule-text"><strong>One Barry's studio class/week.</strong> Wed Chest/Back/Abs. Energy + accountability + heavier weights. Worth it.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">09</div>
+    <div class="rule-text"><strong>Saturday = real recovery.</strong> Don't sneak in a "light lift." The walk is the workout. Your CNS needs it.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-num">10</div>
+    <div class="rule-text"><strong>Stop eating by 8pm.</strong> 16-hour fast before next session. Lets your gut settle and burns fat overnight.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Save to Home Screen</div>
+  <div class="callout callout-green">
+    <strong>iPhone:</strong> Tap the share icon in Safari → "Add to Home Screen" → name it "Cut Plan." Opens fullscreen, no browser bar. Pull it up at the gym fast.
+  </div>
+</div>
+
+<div class="footer-note">CLEAN BUDDIES × CUT PLAN · BUILT FOR 185</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
